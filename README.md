@@ -25,7 +25,6 @@
 
 文件  | 文件说明
 -|-
-
-|ae.h ae.c             | 表示事件驱动
-|aelist.h aelist.c     |  表示list结构
-|redis.c               |  启动程序
+ae.h ae.c             | 表示事件驱动
+aelist.h aelist.c     |  表示list结构
+redis.c               |  启动程序
