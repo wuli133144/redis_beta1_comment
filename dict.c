@@ -271,38 +271,55 @@ static int dictGenericDelete(dict *ht, const void *key, int nofree)
 {
     unsigned int h;
     dictEntry *he, *prevHe;
-
+   
+   //如果ht->size==0
+   //表示并没有节点
     if (ht->size == 0)
         return DICT_ERR;
+    //找到对应的index 插槽
     h = dictHashKey(ht, key) & ht->sizemask;
+    //返回宅基地个的插槽
     he = ht->table[h];
 
     prevHe = NULL;
     while(he) {
+        //在指定的he里面查找指定的key的value
         if (dictCompareHashKeys(ht, key, he->key)) {
             /* Unlink the element from the list */
-            if (prevHe)
+            if (prevHe)//如果prehe不为空
+            //删除he
+            //设置prehe->Next=he->next
+            //free(he)
                 prevHe->next = he->next;
-            else
+            else//否则表示he是一个节点的头节点
+                //这时候就开始删除指定的he节点
+                //设置table[i]=he->next
+                //free(he)
+            
                 ht->table[h] = he->next;
             if (!nofree) {
+                //如果设置了nofree标志
+                //就直接删除
                 dictFreeEntryKey(ht, he);
                 dictFreeEntryVal(ht, he);
             }
             _dictFree(he);
+            //ht中的节点减少一个
             ht->used--;
             return DICT_OK;
         }
+        //移动，如果没有找到就继续遍历查找指定的节点
         prevHe = he;
         he = he->next;
     }
     return DICT_ERR; /* not found */
 }
-
+//删除指定的节点key
+//实际调用的是dictGenericDelete()
 int dictDelete(dict *ht, const void *key) {
     return dictGenericDelete(ht,key,0);
 }
-
+//删除指定的节点 
 int dictDeleteNoFree(dict *ht, const void *key) {
     return dictGenericDelete(ht,key,1);
 }
@@ -346,12 +363,17 @@ void dictRelease(dict *ht)
     _dictFree(ht);
 }
 
+
+//在hashtable中 查找指定的节点
+//
 dictEntry *dictFind(dict *ht, const void *key)
 {
     dictEntry *he;
     unsigned int h;
 
     if (ht->size == 0) return NULL;
+    //ht，key
+    //h是返回的table的index下表
     h = dictHashKey(ht, key) & ht->sizemask;
     he = ht->table[h];
     while(he) {
